@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1578134439575.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3600033043",
+    "id" : "1B9FF8D8",
+    "lastKnownWriteTime" : 1578299060,
+    "last_content_update" : 1578299060631,
+    "path" : "C:/Users/JESUS-CHRIST/Desktop/TP-Data-mining/ui.R",
+    "project_path" : "ui.R",
+    "properties" : {
+        "cursorPosition" : "92,54",
+        "scrollLine" : "0"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

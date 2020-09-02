@@ -1,0 +1,161 @@
+library(cluster)
+library(rpart)
+library(rpart.plot)
+library(nnet)
+library(usethis)
+library(devtools)
+library(neuralnet)
+
+#===================================================1-chargement du fichier "crx.dataa.txt"
+
+data = read.table("crx.data.txt",sep = ",",as.is = T)
+names(data) = c("A1", "A2","A3","A4", "A5","A6","A7", "A8","A9","A10", "A11","A12","A13", "A14","A15", "A16")
+data$A16 = as.factor(data$A16)
+data = as.data.frame(data)
+
+#===================================================2-ANALYSE STATISTQUE
+
+      #Commentaire de la distribution de charque variable distributions
+summary(data)
+str(data)
+                        #3- Prétraitement des données
+      #Methodes dee traitement de valeurs manquantes
+          #- Supprimer les enregistrements qui ont les valeurs manquantes si leur nombre est faible
+data_pr = data
+data_sans_NA = subset(data_pr ,A1 != "?" & A2 != "?" & A3 != "?" 
+                              & A4 != "?" & A5 != "?" & A6 != "?" 
+                              & A7 != "?" & A8 != "?" & A9 != "?"
+                              & A10 != "?" & A11 != "?" & A12 != "?"
+                           & A13 != "?" & A14 != "?" & A15 != "?"  & A16 != "?")
+data_sans_NAs = data_sans_NA
+
+          #- Remplacer les valeurs par la " moyenne, median, Ecart-type, ..." pour les variables quantitatives 
+              #et pour les variables qualitatives par "unknow" comme dans SQLS ou On remplace les valeurs manquantes 
+              #par la valeur majoritaire prise par cet attribut sur l'échantillon complet.ex:junk$nm[junk$nm %in% "B"] <- "b"
+data_pr_2 = data 
+
+#changement des ? en inconnue ou mediane
+data_pr_2$A1[data_pr_2$A1 %in% "?"] = "inconnue"
+
+data_pr_2$A2[data_pr_2$A2 %in% "?"] = "inconnue"
+
+data_pr_2$A3[data_pr_2$A3 %in% "?"] = median(data_pr_2$A3)
+
+data_pr_2$A4[data_pr_2$A4 %in% "?"] = "inconnue"
+
+data_pr_2$A5[data_pr_2$A5 %in% "?"] = "inconnue"
+
+data_pr_2$A6[data_pr_2$A6 %in% "?"] = "inconnue"
+
+data_pr_2$A7[data_pr_2$A7 %in% "?"] = "inconnue"
+
+data_pr_2$A8[data_pr_2$A8 %in% "?"] = median(data_pr_2$A8)
+
+data_pr_2$A9[data_pr_2$A9 %in% "?"] = "inconnue"
+
+data_pr_2$A10[data_pr_2$A10 %in% "?"] = "inconnue"
+
+data_pr_2$A11[data_pr_2$A11 %in% "?"] = median(data_pr$A11)
+
+data_pr_2$A12[data_pr_2$A12 %in% "?"] = "inconnue"
+
+data_pr_2$A13[data_pr_2$A13 %in% "?"] = "inconnue"
+
+data_pr_2$A14[data_pr_2$A14 %in% "?"] = "inconnue"
+
+data_pr_2$A15[data_pr_2$A15 %in% "?"] = median(data_pr_2$A15)
+summary(data_pr_2)
+
+          #- Valeur majoritaire de l'attribut par classe : étant donné un exemple avec une valeur manquante, on remplace 
+              #la valeur manquante par la valeur majoritaire prise par l'attribut correspondant pour les exemples de 
+              #l'échantillon appartenant â la même classe.
+data_pr_3 = data
+
+#===================================================4- Classification supervisée (utiliser le holdout (2/3,1/3) pour séparer les données)
+
+data_cl = data_sans_NA
+summary(data_cl)
+set.seed(12)
+dataClassific = sample(2, nrow(data_cl), replace = TRUE, prob = c(0.67, 0.33))
+train = data_cl[dataClassific == 1,]
+validation = data_cl[dataClassific == 2,]
+
+#================================Decision tree
+
+tree = rpart(A16~A3+A8+A11, train)
+print(tree)
+rpart.plot(tree, extra = 4)
+
+  #Evaluation du jeux d'entrainement à l'aide de a matrice de confision
+
+predictTrain_Tree = predict(tree, newdata = train, type="class")
+tabTree1 = table(predictTrain_Tree, train$A16)
+print(tabTree1)
+1-sum(diag(tabTree1)) / sum(tabTree1)
+
+  #Evaluation du jeux de test à l'aide de a matrice de confision
+
+predictTest_Tree = predict(tree, newdata = validation, type="class")
+tabTree2 = table(predictTest_Tree, validation$A16)
+print(tabTree2)
+precision = 1-sum(diag(tabTree2)) / sum(tabTree2)
+
+#================================Réseau de néronne
+
+nerone = nnet(A16~A3+A8+A11, data = train, size=5, decay = 5e-4, maxit = 200)
+print(nerone)
+
+#plot(nerone, hidden = 5)
+#diana(validation)
+
+#Evaluation du jeux de test
+predictNetTest_neurone1 = predict(nerone, newdata = validation, type="class")
+tabNet_neurone1 = table(predictNetTest_neurone1, validation$A16)
+print(tabNet_neurone1)
+
+#Evaluation du jeux d'entrainement 
+predictNetTrain_neurone2 = predict(nerone, newdata = train, type="class")
+tabNet_neurone2 = table(predictNetTrain_neurone2, train$A16)
+print(tabNet_neurone2)
+
+#==============================================================================================================================
+
+#===================================================5- Classification non supervisée
+
+        #===========a-) A l’aide de l’algorithme kmeans, séparer les données prétraitées à la question 3 en 4 groupes
+
+data_sans_NA$A1 = NULL
+data_sans_NA$A2 = NULL
+data_sans_NA$A4 = NULL
+data_sans_NA$A5 = NULL
+data_sans_NA$A6 = NULL
+data_sans_NA$A7 = NULL
+data_sans_NA$A9 = NULL
+data_sans_NA$A10 = NULL
+data_sans_NA$A12 = NULL
+data_sans_NA$A13 = NULL
+data_sans_NA$A14 = NULL
+data_sans_NA$A16 = NULL
+summary(data_sans_NA)
+
+algo_kmeans=kmeans( data_sans_NA, 4)
+clusplot( data_sans_NA, algo_kmeans$cluster )
+
+algo_kmeans=pam(data_sans_NA,4, metric="euclidean")
+clusplot(data_sans_NA,lines=2,algo_kmeans$clustering)
+
+        #============b-) Utiliser un algorithme de classification hiérarchique pour séparer ces données et afficher le dendrogramme correspondant
+
+#algo_hier=agnes( data_sans_NA )
+#algo_hier$order
+#algo_hier$height = round(algo_hier$height,1)
+#algo_hier$height
+#pltree(algo_hier)
+
+pairs(data_sans_NA)
+fromage.cr<-scale(data_sans_NA,center = T,scale = T)
+d.fromage<-dist(fromage.cr)
+cah.ward<-hclust(d.fromage,method = "ward.D2")
+plot(cah.ward)
+#(rect.hclust(data_sans_NA,k=2)
+

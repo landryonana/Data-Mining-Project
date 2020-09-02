@@ -1,0 +1,10 @@
+> library(gWidgets)
+> library(RMySQL)
+> library(gWidgets)
+> library(dbConnect)
+> con=dbConnect(MySQL(),user='root',password='',dbname='app_db',host='localhost')
+> dbListTables(con)
+[1] "toto_vente"
+> vente=dbGetQuery(con,"select * from toto_vente")
+> str(vente)
+> dim(vente)

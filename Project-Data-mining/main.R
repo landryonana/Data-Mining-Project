@@ -1,0 +1,76 @@
+library(gWidgets)
+library(RMySQL)
+library(dbConnect)
+library(arules)
+library(arulesViz)
+  
+  ruleVente=function(attribute='Designation'){
+    
+    #Connexion + acc?s ? la BD
+    #con=dbConnect(MySQL(),user='root',password='',dbname='app_db',host='localhost')
+    #a="select Num_piece,"
+    #b=" from toto_vente"
+    #c=paste(a,b,sep = 'Designation')
+    #vente1=dbGetQuery(con,c)
+    #write.csv(BD,file = "vente_info")
+    
+    
+    
+    vente = read.table("toto_vente.csv", sep = ",")
+    names(vente) = c("ID", "Type_piece", "Num_piece", "Date_vente", 
+                     "Num_client", "Ref_article", "Designation", "Quantite", "Prix_unitaire")
+    
+    vent=data.frame(vente$Num_piece,vente$Designation)
+    i=1
+    n=nrow(vent)  ###nombre de lignes
+    m=length(levels(vent[,"vente.Designation"]))## nombre d'?l?ments diff?rents
+    v1=rep(0,m)
+    names(v1)= levels(vent[,"vente.Designation"]) ##On utilise les noms des ?l?ments coe nom de colonnes
+    v1[vent[i,"vente.Designation"]]=1
+    while(vent[i,"vente.Num_piece"]==vent[i+1,"vente.Num_piece"]&&i<n)
+    {
+      v1[vent[i+1,"vente.Designation"]]=1
+      i=i+1
+    }
+    M=matrix(v1,ncol=m,byrow=T) 
+    
+    while(i<=n)
+    {
+      i=i+1
+      v1=rep(0,m)
+      names(v1)= levels(vent[,"vente.Designation"])
+      v1[vent[i,"vente.Designation"]]=1
+      while(vent[i,"vente.Num_piece"]==vent[i+1,"vente.Num_piece"]&&i<n)
+      {
+        v1[vent[i+1,"vente.Designation"]]=1
+        i=i+1
+      }
+      if(i<=n){M=rbind(M,v1)}
+    }
+    
+    rownames(M)=levels(vent[,"vente.Num_piece"])
+    tr <- as(M, "transactions")
+    
+    ## Vous pouvez continuer avec l'extraction des r?gles telle que vue en cours.
+    parameter = list(supp = 0.01, conf = 0.09, target ="rules")
+    rules=apriori(tr,parameter)
+    viewRule = inspect(rules)
+    
+    return(viewRule)
+  }
+  
+  rule_sans = ruleVente()
+  #============choisir attribut=============================================================
+  
+  ruleAttributChoisi=function(attribute){
+    
+    viewRule = inspect( ruleVente(attribute) )
+    
+    return(viewRule)
+  }
+  
+  #=========================================================================================
+  
+  #### Il faut s?lectionner toute la suite et ex?cuter avec CRTL+R
+  
+  

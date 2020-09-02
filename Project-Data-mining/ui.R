@@ -1,0 +1,120 @@
+# Load the ggplot2 package which provides
+# the 'mpg' dataset.
+library(ggplot2)
+library(shiny)
+
+questionTP2 = c("distribution variable",
+                "arbre de décision", "réseau de neurones", "mesures d’évaluation",
+                "algorithme kmeans", "classification hiérarchique(dendogramme)")
+
+library(shiny)
+
+library(shiny)
+
+
+  tagList(
+    shinythemes::themeSelector(),
+    navbarPage(
+      # theme = "cerulean",  # <--- To use a theme, uncomment this
+      "App TP1 / TP2",
+      tabPanel("TP1",
+               mainPanel(
+                 tabsetPanel(
+                   tabPanel("Données TP1",
+                            h4("Distribution des données TP1"),
+                            fluidRow(
+                              column(12,
+                                verbatimTextOutput("summary")
+                              ),
+                              tags$hr(),
+                              column(12,
+                                     h4("Table TP1"),
+                                     DT::dataTableOutput("tableTP1")
+                              )
+                            )       
+                   ),
+                   tabPanel("Extraction des règles", 
+                            h4("règle extraite à partir des données"),
+                            column(12,
+                                   DT::dataTableOutput("rule")
+                            )
+                           
+                            )
+                 )
+               )
+      ),
+      tabPanel("TP2", 
+               
+               mainPanel(
+                 
+                 tabsetPanel(
+                   tabPanel("Données TP2",
+                            h4("Distribution des données TP2"),
+                            fluidRow(
+                              column(12,
+                                     verbatimTextOutput("summary2")
+                              ),
+                              tags$hr(),
+                              column(12,
+                                     h4("Table TP2"),
+                                     DT::dataTableOutput("table2")
+                              )
+                            )  
+                   ),
+                   
+                   tabPanel("Prétraitement",
+                            
+                            fluidRow(
+                              column(2),
+                              column(8,
+                                     selectInput("dataP",label = "méthode de prétraitement",
+                                                 choices = c("" ,"Suppression des Valeurs manquantes",
+                                                             "Remplacement des Valeurs manquantes")
+                                     )     
+                              ),
+                              column(2),
+                              
+                            ),
+                            DT::dataTableOutput("tableP")
+                            
+                  ),
+#===================================Classification supervisée                 
+                  tabPanel(
+                    "Arbre de Décision",
+                    tags$br(),
+                    h4("Evaluation Arbre"),
+                    verbatimTextOutput("testArbre"),
+                    plotOutput("arbrePlot")
+                  ),
+                  
+                  tabPanel(
+                    "Réseau de neurones",
+                    tags$br(),
+                    h4("Evaluation du Réseau de Neurones"),
+                    verbatimTextOutput("testneurone"),
+                    plotOutput("neurone")
+                  ),
+                  
+#===================================Classification non supervisée
+                  tabPanel(
+                    "Algorithme du Kmeans",
+                    tags$br(),
+                    h4("Evaluation du Réseau de Neurones"),
+                    #verbatimTextOutput("kmeans"),
+                    plotOutput("kmeansPlot")
+                  ),
+                  
+                  tabPanel(
+                    "classification hiérarchique",
+                    tags$br(),
+                    h4("Dendrogramme"),
+                    #verbatimTextOutput("kmeans"),
+                    plotOutput("classNhPlot")
+                  )
+                  
+                )
+      )
+      
+    )
+  )
+  )

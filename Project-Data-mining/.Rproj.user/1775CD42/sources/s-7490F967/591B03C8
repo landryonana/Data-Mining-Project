@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1578142021005.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "591B03C8",
+    "lastKnownWriteTime" : 1578298940,
+    "last_content_update" : 1578316202319,
+    "path" : "C:/Users/JESUS-CHRIST/Desktop/TP-Data-mining/TP-M1-2.R",
+    "project_path" : "TP-M1-2.R",
+    "properties" : {
+        "cursorPosition" : "150,45",
+        "scrollLine" : "137",
+        "tempName" : "Untitled1"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
